@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
 
 * {
-    font-family: "Mulish", sans-serif;
-    /* font-weight: 50; */
+    /* font-family: "Mulish", sans-serif; */
     box-sizing: border-box;
 }
 
@@ -28,6 +27,7 @@ body, html {
 /* Home */
 
 .nav {
+    font-family: "Mulish", sans-serif;
     position: relative;
     height: 65px;
     display: flex;
@@ -166,6 +166,7 @@ body, html {
 }
 
 .tulisan {
+    
     flex: 1;
     display: flex;
     justify-content: center;
@@ -182,8 +183,9 @@ body, html {
 }
 
 .title {
+    font-family: "Mulish", sans-serif;
     font-size: 150px;
-    font-weight: 100;
+    font-weight: 300;
     opacity: 0;
     margin-bottom: -20px;
     transform: translateY(50px);
@@ -203,6 +205,7 @@ body, html {
 }
 
 .search-container {
+    font-family: "Mulish", sans-serif;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -239,6 +242,7 @@ body, html {
 }
 
 .subtitle {
+    font-family: "Mulish", sans-serif;
     font-size: 20px;
     opacity: 0;
     transform: translateX(100px);
