@@ -4,23 +4,57 @@ import { Navbar } from "@pages/Languages/Navbar";
 import { Sidebar } from "@pages/Languages/Sidebar";
 import { PythonRunner } from "@pages/Languages/Python/PythonRunner";
 import { useTheme } from "@context/ThemeProvider.jsx";
+import { useEffect, useRef } from "react";
 
 export default function PyIfElse() {
-  const navigate = useNavigate();
-  const { isDark } = useTheme();
+    const navigate = useNavigate();
+    const { isDark } = useTheme();
+    const mainRef = useRef(null);
 
-  const sidebarItems = [
-    { to: "/python", label: "Introduction" },
-    { to: "/pyIfElse", label: "Python If-Else" },
-    { to: "/pyLoops", label: "Python Loops" },
-    { to: "/pyArrays", label: "Python Arrays" },
-    { to: "/pyFunctions", label: "Python Functions" },
-    { to: "/pyExercise", label: "Python Exercise" }
-  ];
+    const sidebarItems = [
+      { to: "/python", label: "Introduction" },
+      { to: "/pyIfElse", label: "Python If-Else" },
+      { to: "/pyLoops", label: "Python Loops" },
+      { to: "/pyArrays", label: "Python Arrays" },
+      { to: "/pyFunctions", label: "Python Functions" },
+      { to: "/pyExercise", label: "Python Exercise" }
+    ];
 
-  const bgBase = isDark ? "bg-[#000]" : "bg-[#fff]";
-  const textBase = isDark ? "text-white" : "text-[#18181b]";
-  const headingColor = isDark ? "text-white" : "text-[#18181b]";
+    const bgBase = isDark ? "bg-[#000]" : "bg-[#fff]";
+    const textBase = isDark ? "text-white" : "text-[#18181b]";
+    const headingColor = isDark ? "text-white" : "text-[#18181b]";
+
+    useEffect(() => {
+      const handleScroll = () => {
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const fullHeight = document.body.scrollHeight;
+        // Jika sudah scroll ke bawah dan progress belum pernah dikirim
+        // (Kamu bisa pakai flag lokal agar tidak double POST)
+        if (scrollPosition >= fullHeight - 10) {
+          // Ambil progress dari state, atau cek flag di localStorage sekali (optional)
+          // Tapi progress harus dikirim ke backend
+          const token = localStorage.getItem("jwt");
+          if (!token) return;
+
+          // Cek apakah sudah pernah di-mark di session (biar tidak double POST tiap scroll)
+          if (!sessionStorage.getItem("pyIfElseDone")) {
+            fetch("http://localhost:3001/api/progress", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({ modules: { pyIfElse: true } })
+            }).then(() => {
+              window.dispatchEvent(new Event("progressUpdate"));
+              sessionStorage.setItem("pyIfElseDone", "1");
+            });
+          }
+        }
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
   return (
     <div
@@ -29,7 +63,7 @@ export default function PyIfElse() {
     >
       <Navbar languageName="Python" />
       <Sidebar title="Python Tutorial" items={sidebarItems} />
-      <main className="ml-56 mt-[65px] px-8 pb-24 pt-8 max-w-3xl">
+      <main ref={mainRef} className="ml-56 mt-[65px] px-8 pb-24 pt-8 max-w-3xl">
         <section>
           <h1 className={`text-4xl font-extrabold mb-2 leading-snug tracking-tight ${headingColor}`}>
             Python If-Else Tutorial

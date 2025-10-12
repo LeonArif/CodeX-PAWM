@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@context/ThemeProvider.jsx";
+import { useNavigate } from "react-router-dom";
 import logoLight from "@assets/codeX-removebg-preview1.png";
 import logoDark from "@assets/codeX-removebg-preview.png";
 import profileImg from "@assets/profile-picture.jpg";
 
+
 export function Navbar({ languageName }) {
   const { theme, isDark, toggle } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <header
@@ -69,6 +72,7 @@ export function Navbar({ languageName }) {
               borderColor: isDark ? "#fff" : "#000",
             }}
             draggable="false"
+            onClick={() => navigate("/profile")}
             onMouseOver={e =>
               (e.currentTarget.style.filter =
                 "drop-shadow(2px 2px 1px rgba(255, 126, 185, 0.70)) drop-shadow(-2px -2px 1px rgba(123, 250, 255, 0.70)) drop-shadow(0 0 10px rgba(255,255,255,0.70))"

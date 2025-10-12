@@ -25,13 +25,37 @@ function runPython(code, push) {
     .catch(err => push("\nError: " + err.toString()));
 }
 
-export function PythonCodeChecker({ initialCode, label, testcases, height = 220, internalBorders = false }) {
+// --- Tambahan: storageKey & onSolved ---
+export function PythonCodeChecker({
+  initialCode,
+  label,
+  testcases,
+  height = 220,
+  internalBorders = false,
+  onSolved,
+  storageKey
+}) {
   const { isDark } = useTheme();
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState("");
   const [checking, setChecking] = useState(false);
   const outputRef = useRef(null);
   const monacoRef = useRef(null);
+  const [alreadySolved, setAlreadySolved] = useState(false);
+
+  // Load saved code on mount
+  useEffect(() => {
+    if (storageKey) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setCode(saved);
+    }
+  }, [storageKey]);
+
+  // Save code on change
+  const handleCodeChange = (v) => {
+    setCode(v || "");
+    if (storageKey) localStorage.setItem(storageKey, v || "");
+  };
 
   const palette = isDark
     ? {
@@ -123,33 +147,36 @@ export function PythonCodeChecker({ initialCode, label, testcases, height = 220,
     : "rounded-md";
 
   // Test the code against all testcases
-    const runCheck = async () => {
+  const runCheck = async () => {
     setOutput("Checking...");
     setChecking(true);
     let pass = true, firstFail = null;
     for (let idx = 0; idx < testcases.length; idx++) {
-        const tc = testcases[idx];
-        // Gabungkan kode user dengan print agar output terbaca
-        const userCode = `${code}\nprint(solve(${tc.input}))`;
-        let testcaseResult = "";
-        await new Promise((resolve) => {
+      const tc = testcases[idx];
+      const userCode = `${code}\nprint(solve(${tc.input}))`;
+      let testcaseResult = "";
+      await new Promise((resolve) => {
         runPython(userCode, txt => { testcaseResult += txt; });
-        setTimeout(resolve, 400); // delay Skulpt async
-        });
-        let actual = testcaseResult.trim();
-        if (actual !== tc.expected && pass) {
+        setTimeout(resolve, 400);
+      });
+      let actual = testcaseResult.trim();
+      if (actual !== tc.expected && pass) {
         pass = false;
         firstFail = { idx, tc, actual };
-        }
-        if (!pass) break;
+      }
+      if (!pass) break;
     }
     if (pass) {
-        setOutput("✅ PASS: All testcases passed!");
+      setOutput("✅ PASS: All testcases passed!");
+      if (!alreadySolved && typeof onSolved === "function") {
+        setAlreadySolved(true);
+        onSolved();
+      }
     } else {
-        setOutput(`❌ FAIL\nTestcase #${firstFail.idx + 1} failed:\nInput: ${firstFail.tc.input}\nExpected: ${firstFail.tc.expected}\nGot: ${firstFail.actual}`);
+      setOutput(`❌ FAIL\nTestcase #${firstFail.idx + 1} failed:\nInput: ${firstFail.tc.input}\nExpected: ${firstFail.tc.expected}\nGot: ${firstFail.actual}`);
     }
     setChecking(false);
-    };
+  };
 
   return (
     <div className={`flex flex-col gap-4 rounded-lg border p-4 ${palette.outer}`}>
@@ -167,7 +194,7 @@ export function PythonCodeChecker({ initialCode, label, testcases, height = 220,
           height={height}
           language="python"
           value={code}
-          onChange={(v) => setCode(v || "")}
+          onChange={handleCodeChange}
           beforeMount={handleBeforeMount}
           onMount={handleMount}
           theme={isDark ? "codexDark" : "codexLight"}

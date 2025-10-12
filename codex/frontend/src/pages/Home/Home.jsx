@@ -1,8 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { FaPython, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "@context/AuthContext";
 import codeXLogo from "@assets/codeX-removebg-preview1.png";
 import waveHaikei from "@assets/wave-haikei.svg";
+import profileImg from "@assets/profile-picture.jpg";
+import ProgressBar from "@pages/Home/ProgressBar";
 import "@css/landing.css";
 
 const slidesData = [
@@ -29,6 +32,7 @@ const slidesData = [
 const ANIMATION_DURATION = 400; // ms
 
 const Home = () => {
+  
   const navigate = useNavigate();
   // Refs
   const homeRef = useRef(null);
@@ -52,6 +56,44 @@ const Home = () => {
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showContentTulisan, setShowContentTulisan] = useState(false);
 
+  async function getPythonProgressFromBackend(token) {
+    const PYTHON_MODULES = [
+      "python",
+      "pyIfElse",
+      "pyLoops",
+      "pyArrays",
+      "pyFunctions",
+      "pyExercise"
+    ];
+    const total = PYTHON_MODULES.length;
+
+    if (!token) return { percent: 0, count: 0, total };
+
+    try {
+      const res = await fetch("http://localhost:3001/api/progress", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to fetch progress");
+      const data = await res.json();
+      const done = PYTHON_MODULES.filter(key => data[key]).length;
+      return {
+        percent: Math.round((done / total) * 100),
+        count: done,
+        total
+      };
+    } catch (err) {
+      return { percent: 0, count: 0, total };
+    }
+  }
+
+  const [pythonProgress, setPythonProgress] = useState({ percent: 0, count: 0, total: 6 });
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      getPythonProgressFromBackend(token).then(setPythonProgress);
+    }
+  }, []);
+
   // Carousel class builder
   const getSlideClass = (i) => {
     const total = slidesData.length;
@@ -62,6 +104,8 @@ const Home = () => {
     if (i === rightIdx) return "language right";
     return "language hidden";
   };
+
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   // Overlay & muncul animation on scroll
   useEffect(() => {
@@ -169,6 +213,10 @@ const Home = () => {
     }
   };
 
+  const { user } = useContext(AuthContext);
+
+
+  
   return (
     <div>
       {/* Header */}
@@ -192,14 +240,33 @@ const Home = () => {
           <p className="nav-quote">
             “every line of code is a verse in the codex of innovation.”
           </p>
-          <div className="nav-tulisan">
-            <p className="nav-contents go-content">
-              Contents
-            </p>
-            <button className="sign-in">
-              <span>Sign in</span>
-            </button>
-          </div>
+            <div className="nav-tulisan">
+              <p className="nav-contents go-content">Contents</p>
+              {!user ? (
+                <button className="sign-in" onClick={() => navigate("/login")}>
+                  <span>Sign in</span>
+                </button>
+              ) : (
+                // Profile Picture
+                <img
+                  src={profileImg}
+                  alt="Profile"
+                  className="h-[45px] w-[45px] rounded-full border object-cover cursor-pointer transition-all duration-500"
+                  style={{
+                    borderColor: "#000",
+                  }}
+                  draggable="false"
+                  onClick={() => navigate("/profile")}
+                  onMouseOver={e =>
+                    (e.currentTarget.style.filter =
+                      "drop-shadow(2px 2px 1px rgba(255, 126, 185, 0.70)) drop-shadow(-2px -2px 1px rgba(123, 250, 255, 0.70)) drop-shadow(0 0 10px rgba(255,255,255,0.70))"
+                    )
+                  }
+                  onMouseOut={e => (e.currentTarget.style.filter = "none")}
+
+                />
+              )}
+            </div>
         </nav>
         {/* Overlay */}
         <div
@@ -261,7 +328,7 @@ const Home = () => {
             ref={contentTulisanRef}
             className={`content-tulisan${showContentTulisan ? " muncul" : ""}`}
           >
-            <h2 className="content-title font-light mb-8 text-5xl">Contents</h2>
+            <h2 className="content-title mb-8 text-5xl">Contents</h2>
             <p className="font-thin text-2xl">
               Select a programming language you want to learn!
             </p>
@@ -275,23 +342,21 @@ const Home = () => {
                 <article
                   key={i}
                   className={getSlideClass(i)}
-                  style={{
-                    minWidth: "350px",
-                    height: "350px",
-                    zIndex: i === current ? 3 : i === (current - 1 + total) % total || i === (current + 1) % total ? 2 : 0,
-                    pointerEvents: isAnimating
-                      ? "none"
-                      : i === current
-                      ? "auto"
-                      : "none",
-                    cursor: i === current ? "pointer" : "default"
-                  }}
                   data-link={slide.link}
                   onClick={() => handleSlideClick(i)}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 >
                   {slide.icon}
                   <h1 className="mt-4 text-3xl">{slide.title}</h1>
                   <p className="font-thin" style={{ marginTop: "4px" }}>{slide.desc}</p>
+                  {/* Progress Bar bawah desc */}
+                  {slide.title === "Python" && (
+                    <ProgressBar
+                      percent={pythonProgress.percent}
+                      isHovered={hoveredIndex === i && current === i}
+                    />
+                  )}
                 </article>
               ))}
             </div>
@@ -317,6 +382,21 @@ const Home = () => {
           </section>
         </section>
       </main>
+      <footer
+      className="bg-black"
+        style={{
+          width: "100%",
+          textAlign: "center",
+          padding: "22px 0 16px 0",
+          fontFamily: "Mulish, sans-serif",
+          color: "#ffffffff",
+          fontSize: "12px",
+          letterSpacing: "0.03em",
+          marginTop: "0px"
+        }}
+      >
+        © {new Date().getFullYear()} CodeX. All rights reserved.
+      </footer>
     </div>
   );
 };

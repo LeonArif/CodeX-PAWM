@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@pages/Languages/Navbar";
 import { Sidebar } from "@pages/Languages/Sidebar";
@@ -21,6 +21,34 @@ export default function PyLoops() {
   const bgBase = isDark ? "bg-[#000]" : "bg-[#fff]";
   const textBase = isDark ? "text-white" : "text-[#18181b]";
   const headingColor = isDark ? "text-white" : "text-[#18181b]";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const fullHeight = document.body.scrollHeight;
+      if (scrollPosition >= fullHeight - 10) {
+        const token = localStorage.getItem("jwt");
+        if (!token) return;
+
+        // Agar tidak double POST, simpan flag di sessionStorage
+        if (!sessionStorage.getItem("pyLoopsDone")) {
+          fetch("http://localhost:3001/api/progress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ modules: { pyLoops: true } })
+          }).then(() => {
+            window.dispatchEvent(new Event("progressUpdate"));
+            sessionStorage.setItem("pyLoopsDone", "1");
+          });
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className={`min-h-screen ${bgBase} ${textBase} antialiased transition-colors duration-300`} style={{ fontFamily: '"Mulish", sans-serif' }}>

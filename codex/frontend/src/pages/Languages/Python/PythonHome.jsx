@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../Navbar";
 import { Sidebar } from "../Sidebar";
@@ -24,6 +24,34 @@ export default function PythonHome() {
   const runnerBg = isDark ? "bg-[#232327]" : "bg-[#e4e4e7]";
   const runnerBorder = isDark ? "border-[#232327]" : "border-[#e4e4e7]";
   const headingColor = isDark ? "text-white" : "text-[#18181b]";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const fullHeight = document.body.scrollHeight;
+      if (scrollPosition >= fullHeight - 10) {
+        const token = localStorage.getItem("jwt");
+        if (!token) return;
+
+        // Agar tidak double POST, pakai sessionStorage
+        if (!sessionStorage.getItem("pythonIntroDone")) {
+          fetch("http://localhost:3001/api/progress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ modules: { python: true } })
+          }).then(() => {
+            window.dispatchEvent(new Event("progressUpdate"));
+            sessionStorage.setItem("pythonIntroDone", "1");
+          });
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div
