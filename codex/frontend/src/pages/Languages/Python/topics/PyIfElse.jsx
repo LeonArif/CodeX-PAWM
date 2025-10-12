@@ -24,7 +24,6 @@ export default function PyIfElse() {
     const textBase = isDark ? "text-white" : "text-[#18181b]";
     const headingColor = isDark ? "text-white" : "text-[#18181b]";
 
-    console.log('PyIfElse component mounted!');
     useEffect(() => {
       const handleScroll = () => {
         const scrollPosition = window.scrollY + window.innerHeight;
