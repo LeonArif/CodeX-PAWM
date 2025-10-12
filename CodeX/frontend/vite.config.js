@@ -15,11 +15,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'frontend/src'),
-      '@assets': path.resolve(__dirname, 'frontend/src/assets'),
-      '@pages': path.resolve(__dirname, 'frontend/src/pages'),
-      '@css': path.resolve(__dirname, 'frontend/src/css'),
-      '@context': path.resolve(__dirname, 'frontend/src/context')
+      '@': path.resolve(__dirname, 'src'),
+      '@assets': path.resolve(__dirname, 'src/assets'),
+      '@pages': path.resolve(__dirname, 'src/pages'),
+      '@css': path.resolve(__dirname, 'src/css'),
+      '@context': path.resolve(__dirname, 'src/context')
     }
   }
 })
