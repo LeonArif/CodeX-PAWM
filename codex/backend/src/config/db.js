@@ -1,13 +1,9 @@
 const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,      // Nama database
-  process.env.DB_USER,      // Username
-  process.env.DB_PASS,      // Password
+  process.env.DB_URL, // <--- Langsung pakai link connection string
   {
-    host: process.env.DB_HOST,
     dialect: 'postgres',
-    port: process.env.DB_PORT,  // <--- port masuk ke options!
     logging: false,
   }
 );
