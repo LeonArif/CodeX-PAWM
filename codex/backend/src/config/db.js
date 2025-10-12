@@ -1,11 +1,8 @@
-const { Sequelize } = require('sequelize');
+const { createClient } = require('@supabase/supabase-js');
 
-const sequelize = new Sequelize(
-  process.env.DB_URL, // <--- Langsung pakai link connection string
-  {
-    dialect: 'postgres',
-    logging: false,
-  }
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-module.exports = sequelize;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+module.exports = supabase;

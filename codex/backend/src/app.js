@@ -1,26 +1,23 @@
 const express = require('express');
 require('dotenv').config();
-const cors = require('cors'); // <--- Import cors di atas
-
+const cors = require('cors');
+const supabase = require('./config/db')
 const app = express();
 
-app.use(cors({ // <--- PAKAI DI PALING ATAS, SEBELUM ROUTE/MIDDLEWARE LAIN
+app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }));
 
 app.use(express.json());
 
-const sequelize = require('./config/db');
-const User = require('./models/user');
-const Progress = require('./models/progress');
 const passport = require('./auth/google');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const progressRouter = require('./routes/progress');
 
 app.use(session({
-  secret: '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',
+  secret: process.env.SESSION_SECRET || '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',
   resave: false,
   saveUninitialized: false,
 }));
@@ -28,11 +25,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/progress', progressRouter); // <--- setelah semua middleware
+app.use('/api/progress', progressRouter);
 
-sequelize.sync().then(() => {
-    app.listen(3001, () => console.log('Backend running on 3001'));
-});
+app.listen(3001, () => console.log('Backend running on 3001'));
 
 app.get('/', (req, res) => {
   res.send('Backend is running!');
@@ -45,17 +40,18 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
+    console.log('Authenticated user:', JSON.stringify(req.user, null, 2)); // kalau mau debug
     const token = jwt.sign(
       {
         id: req.user.id,
         email: req.user.email,
         name: req.user.name,
-        // Tambahkan foto profile, coba dua kemungkinan
-        profileImg: req.user.picture || (req.user.photos && req.user.photos[0]?.value) || null,
+        profileImg: req.user.picture || req.user.profileImg || (req.user.photos && req.user.photos[0]?.value) || null,
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
+
     res.redirect(`http://localhost:5173/?token=${token}`);
   }
 );

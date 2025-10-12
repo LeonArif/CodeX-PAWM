@@ -1,27 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const Progress = require('../models/progress');
+const { createProgress, getProgressByUserId } = require('../models/progress');
+const supabase = require('../config/db');
 const auth = require('../middleware/auth');
 
-// Ambil progress user
+// GET: Ambil progress user
 router.get('/', auth, async (req, res) => {
   const { id } = req.user;
-  const progress = await Progress.findOne({ where: { userId: id } });
+  const progress = await getProgressByUserId(id);
+  console.log("progress GET:", JSON.stringify(progress, null, 2));
   res.json(progress ? progress.modules : {});
 });
 
-// Update/tambah progress user dengan error handling
+// POST: Update/tambah progress user
 router.post('/', auth, async (req, res) => {
   try {
     const { id } = req.user;
-    const { modules } = req.body; // { pyIfElse: true, ... }
-    let progress = await Progress.findOne({ where: { userId: id } });
+    const { modules } = req.body;
+    let progress = await getProgressByUserId(id);
 
     if (!progress) {
-      progress = await Progress.create({ userId: id, modules });
+      // Insert baru
+      progress = await createProgress({ userid: id, modules });
+      if (!progress) throw new Error("Insert failed");
     } else {
-      progress.modules = { ...progress.modules, ...modules };
-      await progress.save();
+      // Update modules
+      const newModules = { ...progress.modules, ...modules };
+      const { data, error } = await supabase
+        .from('progress')
+        .update({ modules: newModules })
+        .eq('id', progress.id)
+        .select()
+        .single();
+      if (error) throw error;
+      progress = data;
     }
     res.json(progress.modules);
   } catch (err) {

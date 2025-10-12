@@ -23,21 +23,24 @@ export default function PyIfElse() {
     const bgBase = isDark ? "bg-[#000]" : "bg-[#fff]";
     const textBase = isDark ? "text-white" : "text-[#18181b]";
     const headingColor = isDark ? "text-white" : "text-[#18181b]";
-
+    
+    console.log('PyIfElse component mounted!');
     useEffect(() => {
       const handleScroll = () => {
         const scrollPosition = window.scrollY + window.innerHeight;
         const fullHeight = document.body.scrollHeight;
-        // Jika sudah scroll ke bawah dan progress belum pernah dikirim
-        // (Kamu bisa pakai flag lokal agar tidak double POST)
+        console.log('SCROLL:', scrollPosition, fullHeight);
+        const token = localStorage.getItem("jwt");
+        console.log('TOKEN:', token);
+        console.log('SESSION:', sessionStorage.getItem("pyIfElseDone"));
         if (scrollPosition >= fullHeight - 10) {
-          // Ambil progress dari state, atau cek flag di localStorage sekali (optional)
-          // Tapi progress harus dikirim ke backend
-          const token = localStorage.getItem("jwt");
-          if (!token) return;
-
-          // Cek apakah sudah pernah di-mark di session (biar tidak double POST tiap scroll)
+          console.log('CONDITION MET!');
+          if (!token) {
+            console.log("No token, skip progress POST");
+            return;
+          }
           if (!sessionStorage.getItem("pyIfElseDone")) {
+            console.log('FETCHING progress...');
             fetch("http://localhost:3001/api/progress", {
               method: "POST",
               headers: {
@@ -45,9 +48,17 @@ export default function PyIfElse() {
                 Authorization: `Bearer ${token}`
               },
               body: JSON.stringify({ modules: { pyIfElse: true } })
-            }).then(() => {
+            })
+            .then(res => {
+              if (!res.ok) throw new Error("Progress POST failed");
+              return res.json();
+            })
+            .then(() => {
               window.dispatchEvent(new Event("progressUpdate"));
               sessionStorage.setItem("pyIfElseDone", "1");
+            })
+            .catch(err => {
+              console.error("Progress POST error:", err);
             });
           }
         }
