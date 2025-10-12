@@ -23,24 +23,24 @@ export default function PyIfElse() {
     const bgBase = isDark ? "bg-[#000]" : "bg-[#fff]";
     const textBase = isDark ? "text-white" : "text-[#18181b]";
     const headingColor = isDark ? "text-white" : "text-[#18181b]";
-    
+
     console.log('PyIfElse component mounted!');
     useEffect(() => {
       const handleScroll = () => {
         const scrollPosition = window.scrollY + window.innerHeight;
         const fullHeight = document.body.scrollHeight;
-        console.log('SCROLL:', scrollPosition, fullHeight);
+        // console.log('SCROLL:', scrollPosition, fullHeight);
         const token = localStorage.getItem("jwt");
-        console.log('TOKEN:', token);
-        console.log('SESSION:', sessionStorage.getItem("pyIfElseDone"));
+        // console.log('TOKEN:', token);
+        // console.log('SESSION:', sessionStorage.getItem("pyIfElseDone"));
         if (scrollPosition >= fullHeight - 10) {
-          console.log('CONDITION MET!');
+          // console.log('CONDITION MET!');
           if (!token) {
             console.log("No token, skip progress POST");
             return;
           }
           if (!sessionStorage.getItem("pyIfElseDone")) {
-            console.log('FETCHING progress...');
+            // console.log('FETCHING progress...');
             fetch("http://localhost:3001/api/progress", {
               method: "POST",
               headers: {
