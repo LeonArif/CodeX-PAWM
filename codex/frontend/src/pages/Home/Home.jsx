@@ -70,7 +70,7 @@ const Home = () => {
     if (!token) return { percent: 0, count: 0, total };
 
     try {
-      const res = await fetch("http://localhost:3001/api/progress", {
+      const res = await fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch progress");

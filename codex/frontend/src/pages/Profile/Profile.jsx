@@ -23,7 +23,7 @@ const Profile = () => {
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (token) {
-      fetch("http://localhost:3001/api/progress", {
+      fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
