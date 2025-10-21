@@ -53,6 +53,6 @@ app.get('/auth/google/callback',
       { expiresIn: '7d' }
     );
 
-    res.redirect(`https://code-x-pawm-s49d.vercel.app/?token=${token}`);
+    res.redirect(`https://code-x-pawm.vercel.app/?token=${token}`);
   }
 );

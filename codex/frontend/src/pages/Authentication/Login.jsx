@@ -3,7 +3,7 @@ import { FaGoogle } from "react-icons/fa";
 
 const Login = () => {
   const handleGoogleLogin = () => {
-    window.location.href = "https://code-x-pawm-s49d.vercel.app/auth/google";
+    window.location.href = "https://code-x-pawm-s49d.vercel.app/auth/google/callback";
   };
 
   return (
