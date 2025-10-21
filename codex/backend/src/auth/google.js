@@ -5,7 +5,7 @@ const { createUser, getUserByGoogleid, getUserById } = require('../models/user')
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL,
+  callbackURL: "https://code-x-pawm-s49d.vercel.app/auth/google/callback",
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     console.log("Google profile:", profile); // LOG PROFILE
