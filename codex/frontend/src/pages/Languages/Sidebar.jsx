@@ -14,7 +14,7 @@ export function Sidebar({ title, items }) {
     const fetchProgress = async () => {
       if (!token) return;
       try {
-        const res = await fetch("http://localhost:3001/api/progress", {
+        const res = await fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error("Failed fetch progress");

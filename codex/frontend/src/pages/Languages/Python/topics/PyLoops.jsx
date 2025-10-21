@@ -32,7 +32,7 @@ export default function PyLoops() {
 
         // Agar tidak double POST, simpan flag di sessionStorage
         if (!sessionStorage.getItem("pyLoopsDone")) {
-          fetch("http://localhost:3001/api/progress", {
+          fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

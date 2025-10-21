@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: Contoh API Progress
+  version: 1.0.0
+  description: API backend dengan autentikasi Google dan endpoint progress
+
+servers:
+  - url: http://localhost:3001
+
+paths:
+  /:
+    get:
+      summary: Cek status backend
+      responses:
+        '200':
+          description: Pesan "Backend is running!"
+
+  /auth/google:
+    get:
+      summary: Redirect ke autentikasi Google
+      responses:
+        '302':
+          description: Redirect ke Google OAuth
+
+  /auth/google/callback:
+    get:
+      summary: Callback dari Google OAuth
+      responses:
+        '302':
+          description: Redirect ke frontend dengan token JWT
+
+  /api/progress:
+    get:
+      summary: Ambil progress (contoh, sesuaikan dengan isi progressRouter)
+      responses:
+        '200':
+          description: Data progress
+    post:
+      summary: Tambah progress (contoh)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: integer
+      responses:
+        '201':
+          description: Progress berhasil dibuat
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

@@ -5,7 +5,7 @@ const supabase = require('./config/db')
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://code-x-pawm-s49d.vercel.app"],
   credentials: true
 }));
 

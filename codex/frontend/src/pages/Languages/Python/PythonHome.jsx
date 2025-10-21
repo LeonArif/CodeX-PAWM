@@ -35,7 +35,7 @@ export default function PythonHome() {
 
         // Agar tidak double POST, pakai sessionStorage
         if (!sessionStorage.getItem("pythonIntroDone")) {
-          fetch("http://localhost:3001/api/progress", {
+          fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

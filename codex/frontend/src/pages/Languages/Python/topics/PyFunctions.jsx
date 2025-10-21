@@ -30,7 +30,7 @@ export default function PyFunctions() {
         const token = localStorage.getItem("jwt");
         if (!token) return;
         if (!sessionStorage.getItem("pyFunctionsDone")) {
-          fetch("http://localhost:3001/api/progress", {
+          fetch("https://code-x-pawm-s49d.vercel.app/api/progress", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
