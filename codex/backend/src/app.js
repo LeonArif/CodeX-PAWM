@@ -52,6 +52,6 @@ app.get('/auth/google/callback',
       { expiresIn: '7d' }
     );
 
-    res.redirect(`http://localhost:5173/?token=${token}`);
+    res.redirect(`https://code-x-pawm-s49d.vercel.app/?token=${token}`);
   }
 );
