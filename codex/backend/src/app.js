@@ -15,6 +15,7 @@ const passport = require('./auth/google');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const progressRouter = require('./routes/progress');
+const PORT = process.env.PORT || 3001;
 
 app.use(session({
   secret: process.env.SESSION_SECRET || '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',
@@ -27,7 +28,7 @@ app.use(passport.session());
 
 app.use('/api/progress', progressRouter);
 
-app.listen(3001, () => console.log('Backend running on 3001'));
+app.listen(PORT, () => console.log(`Backend running on ${PORT}`));
 
 app.get('/', (req, res) => {
   res.send('Backend is running!');
