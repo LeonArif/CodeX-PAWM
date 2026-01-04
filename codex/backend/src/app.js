@@ -78,8 +78,34 @@ app.get('/auth/google/callback',
         delete req.session.redirect_uri;
       }
       
+      // Validate redirect URI to prevent open redirect vulnerabilities
+      const isValidRedirectUri = (uri) => {
+        try {
+          const url = new URL(uri);
+          // Allow only specific schemes and domains
+          const allowedPatterns = [
+            /^https:\/\/(code-x-pawm-s49d\.vercel\.app|code-x-pawm\.vercel\.app)(\/.*)?$/,
+            /^exp:\/\/.*/, // Expo development
+            /^codex:\/\/.*/, // Custom scheme for production
+            /^http:\/\/localhost:(19000|19006)(\/.*)?$/, // Expo web
+          ];
+          
+          const uriToCheck = url.toString();
+          return allowedPatterns.some(pattern => pattern.test(uriToCheck));
+        } catch {
+          return false;
+        }
+      };
+      
       // Parse redirect URI to append token properly
       try {
+        if (!isValidRedirectUri(redirectUri)) {
+          console.warn('Redirect URI not in allowlist:', redirectUri);
+          // Fallback to default for security
+          res.redirect(`https://code-x-pawm.vercel.app/?token=${token}`);
+          return;
+        }
+        
         const url = new URL(redirectUri);
         url.searchParams.append('token', token);
         res.redirect(url.toString());
