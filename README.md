@@ -2,7 +2,7 @@
 
 Aplikasi ini adalah platform pembelajaran interaktif untuk bahasa pemrograman, dengan fitur-fitur utama berikut:
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 - **Tutorial Interaktif**  
   Belajar pemrograman melalui berbagai modul:  
@@ -20,7 +20,7 @@ Aplikasi ini adalah platform pembelajaran interaktif untuk bahasa pemrograman, d
 - **Code Runner**  
   Jalankan dan uji kode Python langsung di halaman tutorial dengan feedback output secara real-time.
 
-## 🔒 Fitur Backend (Baru Ditambahkan)
+## Fitur Backend
 
 - **Autentikasi Google OAuth**  
   Pengguna login menggunakan akun Google. Setelah login, aplikasi menyimpan token JWT untuk verifikasi identitas pengguna.
@@ -36,7 +36,7 @@ Aplikasi ini adalah platform pembelajaran interaktif untuk bahasa pemrograman, d
 - **Proteksi API**  
   Semua endpoint progress dilindungi autentikasi JWT, sehingga hanya pengguna terverifikasi yang bisa mengakses/mengupdate progress mereka.
 
-## 🛠️ Cara Kerja Singkat
+## Cara Kerja Singkat
 
 1. **User login** via Google → mendapatkan token JWT.
 2. **Token JWT disimpan** di localStorage.
@@ -44,7 +44,7 @@ Aplikasi ini adalah platform pembelajaran interaktif untuk bahasa pemrograman, d
 4. Backend **menyimpan progress** ke Supabase sesuai akun user.
 5. Progress ditampilkan kembali ke user di sidebar setiap kali login.
 
-## 🚀 Link Deploy
+## Link Deploy
 
 1. Front End : https://code-x-pawm.vercel.app/
 2. Back End: https://code-x-pawm-s49d.vercel.app/
